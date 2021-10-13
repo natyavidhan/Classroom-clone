@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}
+    Home
+{% endblock title %}
+{% block content %}
+<style>
+    .avatar{
+        height: 250px;
+        border: 10px solid black;
+        border-radius: 100%;
+        background-color: white;
+    }
+    .center{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+    <div class="container mt-5">
+        <center>
+            <img src="{{user['avatar']}}" alt="avatar" class="avatar">
+            <h1 class="text-center mt-5">Welcome! {{user['username']}}</h1>
+            <input type="text" id="name"><button class="btn-sm btn-warning mx-1" onclick="changeName()">Change Name</button>
+            <br>
+            <a href="/classes"><button class="btn btn-info btn-large mt-4">Classes</button></a>
+            <a href="/logout"><button class="mt-4 btn btn-danger btn-large">Logout</button></a>
+        </center>
+    </div>
+    <script>
+        function changeName() {
+            var name = document.getElementById("name").value;
+            $.ajax({
+                url: "/changeName",
+                type: "POST",
+                data: {
+                    name: name
+                },
+                success: function(data) {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock content %}
