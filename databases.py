@@ -91,20 +91,32 @@ class Database:
         
     def getResources(self, classID):
         resources = self.resources.find({'class': classID})
+        if resources is None:
+            return []
         return [resource for resource in resources]
     
-    def addAssignment(self, classID, name, description):
+    def addAssignment(self, classID, name, description, typ):
         self.assignments.insert_one({
             '_id': str(uuid4()),
             'class': classID,
             'name': name,
             'description': description,
+            'type': typ,
+            'answers': [],
             'created': datetime.datetime.now().strftime("%d %B %Y, %I:%M:%S %p")
         })      
     
+    def addAnswer(self, assignmentID, userID, answer):
+        self.assignments.update_one({'_id': assignmentID}, {'$push': {'answers': {userID: answer}}})
+    
     def getAssignments(self, classID):
         assignments = self.assignments.find({'class': classID})
+        if assignments is None:
+            return []
         return [assignment for assignment in assignments]
+    
+    def getAssignment(self, assignmentID):
+        return self.assignments.find_one({'_id': assignmentID})
         
     def classExists(self, ID):
         return self.classes.find_one({'_id': ID}) is not None

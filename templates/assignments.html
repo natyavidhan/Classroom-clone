@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{class_['name']}}
+{% endblock title %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/class.css">
+<div class="container mt-5 mb-5">
+    <div class="top-box">
+        <img src="{{class_['image']}}" alt="" class="classimg">
+        <div class="content text-center">
+            <h1>{{class_['name']}}</h1>
+            <h5>{{class_['description']}}</h5>
+            <h4>Code: {{class_['code']}}</h4>
+        </div>
+    </div>
+    <div class="selection">
+        <button class="choose">Assignments</button>
+        <button class="choose">Resources</button>
+    </div>
+    <div class="stream">
+        {% if user['_id'] == class_['by'] %}
+            <button class="choose new" id="new">New</button>            
+        {% endif %}
+        {% for assignment in assignments %}
+            <div class="assignment">
+                <form action="/answer/{{assignment['_id']}}" method="post">
+                    <h3>{{assignment['name']}}</h3>
+                    <h5>{{assignment['description']}}</h5>
+                    {% if assignment['type'] == 'Text' %}
+                        <textarea name="answer" id="answer" cols="100" rows="2"></textarea>
+                    {% else %}
+                        <input type="file" class="mb-3" name="answer" id="answer">
+                    {% endif %}
+                    <br>
+                    <button class="btn btn-success mb-3" type="submit" id="submit">Submit</button>
+                    <h6>Assigned on: {{assignment['created']}}</h6>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.new').click(function(){
+            window.location.href = "/class/{{class_['_id']}}/assignments/new";
+        });
+    });
+</script>
+{% endblock content %}
