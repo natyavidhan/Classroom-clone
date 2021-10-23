@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}
+    Answers
+{% endblock title %}
+{% block content %}
+    <div class="container mt-5">
+        <div class="text-center mb-3 mt-3">
+            <h3>Assignment: {{assignment['name']}}</h3>
+            <h4>Description: {{assignment['description']}}</h4>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Answers</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Answer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for answer in assignment['answers'] %}
+                            <tr>
+                                <td><img src="{{answer.by.avatar}}" height="50px" alt=""> {{ answer.by.username }}</td>
+                                <td>{{ answer.by.email }}</td>
+                                {% if assignment['type'] == 'Text' %}
+                                    <td>{{ answer.answer }}</td>                                    
+                                {% else %}
+                                    <td><a href="{{ answer.answer }}" target="_blank">Answer</a></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}
+    New Class
+{% endblock title %}
+{% block content %}
+<style>
+    textarea{
+        width: 100%;
+        height: 100px;
+    }
+    input{
+        width: 100%;
+    }
+    h4{
+        margin-top: 10px;
+        text-align: left !important;
+    }
+</style>
+<div class="text-center container">
+    <form action="/join" method="post">
+        <h1 class="text-center mt-5 mb-5">Join Class</h1>
+        <h4>Code</h4>
+        <input type="text" name="code" id="name" required/>
+        <input type="submit" value="Join" class="mt-5" style="width: 100px !important; border-radius: 10px; border: 3px solid black;">
+    </form>
+</div>
+<script>
+
+</script>
+{% endblock content %}

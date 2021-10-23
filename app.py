@@ -31,7 +31,7 @@ def dashboard():
     return redirect(url_for('home'))
 
 @app.route('/login')
-def teacher():
+def login():
     return render_template('login.html')
 
 @app.route('/logout')
@@ -92,7 +92,12 @@ def assignments(class_id):
         if database.classExists(class_id):
             class_ = database.getClass(class_id)
             assignments = database.getAssignments(class_id)
-            return render_template('assignments.html', class_=class_, assignments=assignments, user=session['user'])
+            answerers = {}
+            for a in assignments:
+                answerers[a['_id']] = [list(l.keys())[0] for l in [j for j in a['answers']]]
+            return render_template('assignments.html', class_=class_, 
+                                   assignments=assignments, answerers=answerers,
+                                   user=session['user'])
         else:
             return "class doesn't exist"
     else:
@@ -117,6 +122,29 @@ def newAssignments(class_id):
             return redirect(url_for('assignments', class_id=class_id))
     else:
         return redirect(url_for('home'))
+    
+@app.route('/class/<class_id>/assignments/answer/<assignment_id>', methods=['GET', 'POST'])
+def assignmentAnswers(class_id, assignment_id):
+    if 'user' in session:
+        if request.method == 'GET':
+            if database.classExists(class_id):
+                class_ = database.getClass(class_id)
+                if session['user']['_id'] == class_['by']:
+                    assignment = database.getAssignment(assignmentID=assignment_id)
+                    for answer in assignment['answers']:
+                        answer['by'] = database.getUserWithID(list(answer.keys())[0])
+                        answer['answer'] = list(answer.values())[0]
+                    return render_template('answers.html', class_=class_, assignment=assignment, user=session['user'])
+                else:
+                    return redirect(url_for('home'))
+            else:
+                return "class doesn't exist"
+        else:
+            data = request.form.to_dict()
+            database.addAssignment(class_id, data['name'], data['description'], data['type'])            
+            return redirect(url_for('assignments', class_id=class_id))
+    else:
+        return redirect(url_for('home'))
 
 @app.route('/answer/<assignment_id>', methods=['POST'])
 def answer(assignment_id):
@@ -124,9 +152,7 @@ def answer(assignment_id):
         assignment = database.getAssignment(assignment_id)
         if assignment is None:
             return "assignment doesn't exist"
-        # allAns = j for j in assignment['answers']
         class_ = database.getClass(assignment['class'])
-        # print([j for j in assignment['answers']])
         print([list(l.keys())[0] for l in [j for j in assignment['answers']]])
         if session['user']['_id'] in class_['members'] and session['user']['_id'] not in [list(l.keys())[0] for l in [j for j in assignment['answers']]]:
             if assignment['type'] == 'Text':
@@ -135,12 +161,28 @@ def answer(assignment_id):
                 return redirect(url_for('assignments', class_id=class_['_id']))
             else:
                 file = request.files['answer']
-                fireStrg.child('answers/' + assignment_id + '/' + session['user']['email']).put(file)
-                url = fireStrg.child('answers/' + assignment_id + '/' + session['user']['email']).get_url(None)
-                database.addAnswer(assignment_id, url)
+                ext = file.filename.split('.')[-1]
+                fireStrg.child('answers/' + assignment_id + '/' + session['user']['email'] + f".{ext}").put(file)
+                url = fireStrg.child('answers/' + assignment_id + '/' + session['user']['email'] + f".{ext}").get_url(None)
+                database.addAnswer(assignment_id, session['user']['_id'], url)
                 return redirect(url_for('assignments', class_id=class_['_id']))
         else:
             return redirect(url_for('assignments', class_id=class_['_id']))
+
+@app.route('/join', methods=['GET', 'POST'])
+def joinClass():
+    if 'user' in session:        
+        if request.method == 'POST':
+            class_code = request.form.get('code')
+            joined = database.joinClass(session['user']['_id'], class_code)
+            if joined:
+                return redirect(url_for('classes'))
+            else: 
+                return "class doesn't exist"
+        else:
+            return render_template('joinClass.html')
+    else:
+        return redirect(url_for('login'))
 
 def handle_authorize(remote, token, user_info):
     if database.userExists(user_info['email']):

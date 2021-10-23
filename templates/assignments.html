@@ -10,7 +10,9 @@
         <div class="content text-center">
             <h1>{{class_['name']}}</h1>
             <h5>{{class_['description']}}</h5>
-            <h4>Code: {{class_['code']}}</h4>
+            {% if user['_id'] == class_['by'] %}
+                <h4>Code: {{class_['code']}}</h4>           
+            {% endif %}
         </div>
     </div>
     <div class="selection">
@@ -23,16 +25,23 @@
         {% endif %}
         {% for assignment in assignments %}
             <div class="assignment">
-                <form action="/answer/{{assignment['_id']}}" method="post">
+                <form action="/answer/{{assignment['_id']}}" method="post" enctype="multipart/form-data">
                     <h3>{{assignment['name']}}</h3>
                     <h5>{{assignment['description']}}</h5>
-                    {% if assignment['type'] == 'Text' %}
-                        <textarea name="answer" id="answer" cols="100" rows="2"></textarea>
+                    {% if user['_id'] not in answerers[assignment['_id']] %}
+                        {% if assignment['type'] == 'Text' %}
+                            <textarea name="answer" id="answer" cols="100" rows="2"></textarea>
+                        {% else %}
+                            <input type="file" class="mb-3" name="answer" id="answer">
+                        {% endif %}
+                        <br>
+                        <button class="btn btn-success mb-3" type="submit" id="submit">Submit</button>    
                     {% else %}
-                        <input type="file" class="mb-3" name="answer" id="answer">
+                    <h5><i>Submitted!</i></h5>                    
                     {% endif %}
-                    <br>
-                    <button class="btn btn-success mb-3" type="submit" id="submit">Submit</button>
+                    {% if user['_id'] == class_['by'] %}
+                        <button class="btn btn-success mb-3" onclick="window.location.href = `/class/{{class_['_id']}}/assignments/answer/{{assignment['_id']}}`" type="button">Answers</button>            
+                    {% endif %}
                     <h6>Assigned on: {{assignment['created']}}</h6>
                 </form>
             </div>

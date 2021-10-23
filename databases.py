@@ -48,6 +48,9 @@ class Database:
         self.users.update_one({'email': email}, {'$set': {'username': name}})
         return True
     
+    def getUserWithID(self, ID):
+        return self.users.find_one({'_id': ID})
+    
     def createClass(self, userID, name, description):
         ID = str(uuid4())
         self.classes.insert_one({
@@ -121,3 +124,12 @@ class Database:
     def classExists(self, ID):
         return self.classes.find_one({'_id': ID}) is not None
     
+    def joinClass(self, userID, code):
+        classID = self.classes.find_one({'code': code})
+        if classID is None:
+            return False
+        if userID in classID['members']:
+            return False
+        self.classes.update_one({'_id': classID['_id']}, {'$push': {'members': userID}})
+        self.users.update_one({'_id': userID}, {'$push': {'classesJoined': classID['_id']}})
+        return True

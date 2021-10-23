@@ -1,5 +1,5 @@
 :root{
-    --block-colors: #aad5d8;
+    --block-colors: rgb(241, 241, 241);;
 }
 
 .container{
@@ -12,12 +12,18 @@
     background-color: var(--block-colors);
     border-radius: 25px;
     display: grid;
+    box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, .10),
+    0 10px 10px -5px rgba(0, 0, 0, .04);
 }
 .selection{
     background-color: var(--block-colors);
     border-radius: 25px;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, .10),
+    0 10px 10px -5px rgba(0, 0, 0, .04);
 }
 .choose{
     margin: 25px;
@@ -34,9 +40,12 @@
     margin: 25px;
     padding: 25px;
     border: none;
-    border: 5px solid black;
-    background-color: #779fa2;
+    /* border: 5px solid black; */
+    background-color: #d1d1d1;
     border-radius: 25px;
+    box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, .10),
+    0 10px 10px -5px rgba(0, 0, 0, .04);
 }
 
 @media (min-width: 770px){
@@ -48,6 +57,9 @@
         justify-items: center;
         grid-template-columns: 1fr 1fr 1fr;
         background-color: var(--block-colors);
+        box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, .10),
+        0 10px 10px -5px rgba(0, 0, 0, .04);
     }
     .classimg{
         background-color: white;
@@ -70,6 +82,9 @@
         justify-items: center;
         grid-template-rows: 1fr 1fr;
         background-color: var(--block-colors);
+        box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, .10),
+        0 10px 10px -5px rgba(0, 0, 0, .04);
     }
     .classimg{
         background-color: white;
