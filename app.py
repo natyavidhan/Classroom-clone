@@ -4,6 +4,7 @@ import config
 import databases
 from loginpass import create_flask_blueprint, GitHub, Google, Gitlab, Discord
 import pyrebase
+from uuid import uuid4
 
 app = Flask(__name__)
 
@@ -168,6 +169,49 @@ def answer(assignment_id):
                 return redirect(url_for('assignments', class_id=class_['_id']))
         else:
             return redirect(url_for('assignments', class_id=class_['_id']))
+
+@app.route('/class/<class_id>/resources')
+def resources(class_id):
+    if 'user' in session:
+        if database.classExists(class_id):
+            class_ = database.getClass(class_id)
+            resources = database.getResources(class_id)
+            print(resources)
+            return render_template('resources.html', resources=resources, user=session['user'], class_=class_)
+
+@app.route('/class/<class_id>/resources/new', methods=['GET', 'POST'])
+def newResources(class_id):
+    if 'user' in session:
+        if request.method == 'GET':
+            if database.classExists(class_id):
+                class_ = database.getClass(class_id)
+                if session['user']['_id'] == class_['by']:
+                    return render_template('newResource.html', class_=class_, user=session['user'])
+                else:
+                    return redirect(url_for('home'))
+            else:
+                return "class doesn't exist"
+        else:
+            data = request.form.to_dict()
+            ID = str(uuid4())
+            file = request.files['resource']
+            if file.filename == '':
+                database.addResource(ID ,class_id, data['name'], data['description'])
+                print(data['description'])
+                return redirect(url_for('resources', class_id=class_id))
+            ext = file.filename.split('.')[-1]
+            fireStrg.child('resources/' + ID + f".{ext}").put(file)
+            url = fireStrg.child('resources/' + ID + f".{ext}").get_url(None)
+            database.addResource(ID ,class_id, data['name'], data['description'], url)
+            return redirect(url_for('resources', class_id=class_id))
+        
+@app.route('/class/<class_id>/resources/resource/<resource_id>')
+def resource(class_id, resource_id):
+    if 'user' in session:
+        if database.classExists(class_id):
+            class_ = database.getClass(class_id)
+            resource = database.getResource(resource_id)
+            return render_template('resource.html', resource=resource, user=session['user'], class_=class_)
 
 @app.route('/join', methods=['GET', 'POST'])
 def joinClass():

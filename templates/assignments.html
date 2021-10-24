@@ -16,8 +16,8 @@
         </div>
     </div>
     <div class="selection">
-        <button class="choose">Assignments</button>
-        <button class="choose">Resources</button>
+        <button class="choose" onclick="window.location.href = `/class/{{class_['_id']}}/assignments`">Assignments</button>
+        <button class="choose" onclick="window.location.href = `/class/{{class_['_id']}}/resources`">Resources</button>
     </div>
     <div class="stream">
         {% if user['_id'] == class_['by'] %}

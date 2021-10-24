@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{resource['name']}}
+{% endblock title %}
+{% block content %}
+<style>
+.name{
+    background-color: rgb(241, 241, 241);
+    box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, .10),
+    0 10px 10px -5px rgba(0, 0, 0, .04);
+    border-radius: 25px;    
+    padding: 10px;
+}
+.rescontent{
+    background-color: rgb(241, 241, 241);
+    box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, .10),
+    0 10px 10px -5px rgba(0, 0, 0, .04);
+    border-radius: 25px;    
+    padding: 20px;
+}
+.attachment{
+    background-color: rgb(241, 241, 241);
+    box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, .10),
+    0 10px 10px -5px rgba(0, 0, 0, .04);
+    border-radius: 25px;    
+    padding: 20px;
+}
+</style>
+<div class="container mt-5">  
+    <div class="name">
+        <h3 class="text-center">{{resource['name']}}</h3>
+    </div>  
+    <div class="rescontent mt-4">
+        {{resource['description']}}
+    </div>
+    {% if resource['link'] is not none %}
+    <div class="attachment">
+        <a href="{{resource['link']}}">Attachment</a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    $(".rescontent").each(function(){
+        this.innerHTML = $(this).text();
+        });
+</script>    
+{% endblock content %}

@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>The Man in Blue &gt; Experiments &gt; widgEditor</title>
+<style type="text/css" media="all">
+	@import "css/info.css";
+	@import "css/main.css";
+	@import "css/widgEditor.css";
+</style>
+<script type="text/javascript" src="scripts/widgEditor.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+		<form action="submit.php" onsubmit="console.log('Your submitted HTML was:\n\n' + document.getElementById('noise').value); return false;">
+			<fieldset>
+				<textarea onchange="$('#noise').val()" id="noise" name="noise" class="widgEditor nothing">&lt;p&gt;widgEditor &lt;strong&gt;automatically&lt;/strong&gt; integrates the content that was in the textarea!&lt;/p&gt;</textarea>
+			</fieldset>
+			<fieldset class="submit">
+				<input type="submit" value="Check the submitted code" onclick="$('textarea#noise').val();" />
+			</fieldset>
+		</form>
+	</div>
+<!-- END content -->
+</body>
+
+
+
+
+</html>

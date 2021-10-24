@@ -82,9 +82,9 @@ class Database:
         print(user)
         return user['classesJoined']
         
-    def addResource(self, classID, name, description, link):
+    def addResource(self, ID, classID, name, description, link = None):
         self.resources.insert_one({
-            '_id': str(uuid4()),
+            '_id': ID,
             'class': classID,
             'name': name,
             'description': description,
@@ -97,6 +97,9 @@ class Database:
         if resources is None:
             return []
         return [resource for resource in resources]
+    
+    def getResource(self, ID):
+        return self.resources.find_one({'_id': ID})
     
     def addAssignment(self, classID, name, description, typ):
         self.assignments.insert_one({
