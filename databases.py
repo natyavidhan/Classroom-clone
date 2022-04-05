@@ -53,16 +53,21 @@ class Database:
     
     def createClass(self, userID, name, description):
         ID = str(uuid4())
-        self.classes.insert_one({
-            '_id': ID,
-            'by': userID,
-            'name': name,
-            'description': description,
-            'image': f"https://avatars.dicebear.com/api/jdenticon/{random.randint(100000000000000, 999999999999999999)}.svg",
-            'created': datetime.datetime.now().strftime("%d %B %Y, %I:%M:%S %p"),
-            'code': ''.join(random.choice(self.keys) for i in range(8)),
-            'members': [userID]
-        })
+        self.classes.insert_one(
+            {
+                '_id': ID,
+                'by': userID,
+                'name': name,
+                'description': description,
+                'image': f"https://avatars.dicebear.com/api/jdenticon/{random.randint(100000000000000, 999999999999999999)}.svg",
+                'created': datetime.datetime.now().strftime(
+                    "%d %B %Y, %I:%M:%S %p"
+                ),
+                'code': ''.join(random.choice(self.keys) for _ in range(8)),
+                'members': [userID],
+            }
+        )
+
         self.users.update_one({'_id': userID}, {'$push': {'classesCreated': ID}})
         self.users.update_one({'_id': userID}, {'$push': {'classesJoined': ID}})
         
@@ -96,7 +101,7 @@ class Database:
         resources = self.resources.find({'class': classID})
         if resources is None:
             return []
-        return [resource for resource in resources]
+        return list(resources)
     
     def getResource(self, ID):
         return self.resources.find_one({'_id': ID})
@@ -119,7 +124,7 @@ class Database:
         assignments = self.assignments.find({'class': classID})
         if assignments is None:
             return []
-        return [assignment for assignment in assignments]
+        return list(assignments)
     
     def getAssignment(self, assignmentID):
         return self.assignments.find_one({'_id': assignmentID})
