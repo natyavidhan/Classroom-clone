@@ -26,7 +26,7 @@
                     <tbody>
                         {% for answer in assignment['answers'] %}
                             <tr>
-                                <td><img src="{{answer.by.avatar}}" height="50px" alt=""> {{ answer.by.username }}</td>
+                                <td><img src="https://api.dicebear.com/9.x/dylan/svg?seed={{answer.by._id}}" height="50px" alt=""> {{ answer.by.username }}</td>
                                 <td>{{ answer.by.email }}</td>
                                 {% if assignment['type'] == 'Text' %}
                                     <td>{{ answer.answer }}</td>                                    

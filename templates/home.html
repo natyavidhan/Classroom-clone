@@ -18,7 +18,7 @@
 </style>
     <div class="container mt-5">
         <center>
-            <img src="{{user['avatar']}}" alt="avatar" class="avatar">
+            <img src="https://api.dicebear.com/9.x/dylan/svg?seed={{user['_id']}}" alt="avatar" class="avatar">
             <h1 class="text-center mt-5">Welcome! {{user['username']}}</h1>
             <input type="text" id="name"><button class="btn-sm btn-warning mx-1" onclick="changeName()">Change Name</button>
             <br>

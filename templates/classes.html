@@ -40,7 +40,7 @@
 <div class="container mt-5 classes">
     {% for class in classes %}
         <div class="class" onclick="window.location.href = `/class/{{class['_id']}}`">
-            <img src="{{class['image']}}" class="classimg">           
+            <img src="https://api.dicebear.com/9.x/shapes/svg?seed={{class['_id']}}" class="classimg">           
             <div>
                 <h4 class="fcH1">{{class['name']}}</h4>
             </div>    

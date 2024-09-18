@@ -129,7 +129,7 @@ def assignments(class_id):
             for a in assignments:
                 answerers[a['_id']] = [list(l.keys())[0] for l in [j for j in a['answers']]]
             return render_template('assignments.html', class_=class_, 
-                                   assignments=assignments, answerers=answerers,
+                                   assignments=assignments[::-1], answerers=answerers,
                                    user=session['user'])
         else:
             return "class doesn't exist"
@@ -209,7 +209,7 @@ def resources(class_id):
             class_ = database.getClass(class_id)
             resources = database.getResources(class_id)
             print(resources)
-            return render_template('resources.html', resources=resources, user=session['user'], class_=class_)
+            return render_template('resources.html', resources=resources[::-1], user=session['user'], class_=class_)
 
 @app.route('/class/<class_id>/resources/new', methods=['GET', 'POST'])
 def newResources(class_id):
