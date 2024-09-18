@@ -6,33 +6,21 @@ import requests
 import pyrebase
 
 class Database:
-    def __init__(self, URL, storage, db):
+    def __init__(self, URL):
         self.client = MongoClient(URL)
         self.db = self.client['Classroom-Clone']
         self.users = self.db.users
         self.classes = self.db.classes
         self.resources = self.db.resources
         self.assignments = self.db.assignments
-
-        self.FireDB = db
-        self.FireStrg = storage
         
-        self.keys = ["A", "B", "C", "D", "E", "F", "G", "H", 
-                     "I", "J", "K", "L", "M", "N", "O", "P", 
-                     "Q", "R", "S", "T", "U", "V", "W", "X", 
-                     "Y", "Z", "0", "1", "2", "3", "4", "5", 
-                     "6", "7", "8", "9", "a", "b", "c", "d", 
-                     "e", "f", "g", "h", "i", "j", "k", "l", 
-                     "m", "n", "o", "p", "q", "r", "s", "t", 
-                     "u", "v", "w", "x", "y", "z"]
-        
-    def addUser(self, email):
-        name = requests.get('http://names.drycodes.com/1').json()[0]
+    def addUser(self, email, name):
+        ID = str(uuid4())
         self.users.insert_one({
-            '_id': str(uuid4()),
+            '_id': ID,
             'username': name,
             'email': email,
-            'avatar': f'https://avatars.dicebear.com/api/bottts/{random.randint(100000000000000, 999999999999999999)}.svg',
+            'avatar': f'https://avatars.dicebear.com/api/dylan/{ID}.svg',
             'created': datetime.datetime.now().strftime("%d %B %Y, %I:%M:%S %p"),
             'classesCreated': [],
             'classesJoined': []
@@ -59,11 +47,11 @@ class Database:
                 'by': userID,
                 'name': name,
                 'description': description,
-                'image': f"https://avatars.dicebear.com/api/jdenticon/{random.randint(100000000000000, 999999999999999999)}.svg",
+                'image': f"https://api.dicebear.com/9.x/shapes/svg?seed={ID}",
                 'created': datetime.datetime.now().strftime(
                     "%d %B %Y, %I:%M:%S %p"
                 ),
-                'code': ''.join(random.choice(self.keys) for _ in range(8)),
+                'code': ''.join(random.choice("abcdefghijklmnopqrstuvwxyz0123456789") for _ in range(8)),
                 'members': [userID],
             }
         )

@@ -1,23 +1,26 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session
+from flask import Flask, render_template, request, redirect, url_for, session, abort
 from authlib.integrations.flask_client import OAuth
 from config import config
 import databases
-from loginpass import create_flask_blueprint, GitHub, Google, Gitlab, Discord
 import pyrebase
 from uuid import uuid4
+from dotenv import load_dotenv
 
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
 app.config.from_object(config)
-backends = [GitHub, Google, Gitlab, Discord]
-firebaseConfig = config.FIREBASE_CONFIG
+app.secret_key = os.getenv("secret_key")
+firebaseConfig = config['FIREBASE_CONFIG']
 
 oauth = OAuth(app)
 firebase = pyrebase.initialize_app(firebaseConfig)
 fireDB = firebase.database()
 fireStrg = firebase.storage()
-database = databases.Database(config.MONGO_URI, fireStrg, fireDB)
+database = databases.Database(config['MONGO_URI'])
 
 
 @app.route('/')
@@ -25,6 +28,34 @@ def home():
     if 'user' in session:
         return redirect(url_for('dashboard'))
     return render_template('index.html')
+
+@app.route('/auth/google/')
+def google():
+    GOOGLE_CLIENT_ID = config['GOOGLE_CLIENT_ID']
+    GOOGLE_CLIENT_SECRET = config['GOOGLE_CLIENT_SECRET']
+    
+    CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+    oauth.register(
+        name='google',
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        server_metadata_url=CONF_URL,
+        client_kwargs={
+            'scope': 'openid email profile'
+        }
+    )
+    redirect_uri = url_for('google_auth', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@app.route('/auth/google/callback')
+def google_auth():
+    token = oauth.google.authorize_access_token()
+    prof = token['userinfo']
+    user = database.getUser(prof['email'])
+    if user is None:
+        user = database.addUser(prof['email'], prof['name'])
+    session['user'] = database.getUser(prof['email'])
+    return redirect('/home')
 
 @app.route('/home')
 def dashboard():
@@ -228,18 +259,6 @@ def joinClass():
             return render_template('joinClass.html')
     else:
         return redirect(url_for('login'))
-
-def handle_authorize(remote, token, user_info):
-    if database.userExists(user_info['email']):
-        session['user'] = database.getUser(user_info['email'])
-    else:
-        database.addUser(user_info['email'])
-        session['user'] = database.getUser(user_info['email'])
-    return redirect(url_for('home'))
-
-
-bp = create_flask_blueprint(backends, oauth, handle_authorize)
-app.register_blueprint(bp, url_prefix='/')
 
 
 if __name__ == '__main__':
